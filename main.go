@@ -20,22 +20,32 @@ const (
 
 func main() {
 
-	var getTPS bool
-	var isServer bool
-	var isClient bool
+	var (
+		getTPS   bool
+		isServer bool
+		clientIP string
+	)
 	flag.BoolVar(&getTPS, "tps", false, "Afficher le nombre d'appel à Update par seconde")
 	flag.BoolVar(&isServer, "server", false, "Lancer le jeu en mode serveur")
-	flag.BoolVar(&isClient, "client", false, "Lancer le jeu en mode client avec l'adresse IP du serveur")
+	flag.StringVar(&clientIP, "client", "", "Connecter le jeu en tant que client à l'adresse IP spécifiée")
 	flag.Parse()
 
 	if isServer {
-		InitServer()
-		return
+		s := NewServer(":8080")
+		err := s.Start()
+		if err != nil {
+			return
+		}
 	}
 
-	if isClient {
-		InitClient()
-		return
+	if clientIP != "" {
+		client := NewClient()
+		err := client.connect(clientIP)
+		if err != nil {
+			return
+		} else {
+			log.Printf("Connexion réussie au serveur %s", clientIP)
+		}
 	}
 
 	ebiten.SetWindowSize(screenWidth, screenHeight)

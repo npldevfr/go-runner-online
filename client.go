@@ -1,26 +1,55 @@
 package main
 
 import (
+	"bufio"
+	"fmt"
 	"log"
 	"net"
 )
 
-func client() {
+type Client struct {
+	conn net.Conn
+}
 
-	conn, err := net.Dial("tcp", "172.21.65.39:8080")
+func NewClient() *Client {
+	return &Client{}
+}
+
+func (c *Client) connect(address string) error {
+	conn, err := net.Dial("tcp", address)
 	if err != nil {
-		log.Println("Dial error:", err)
-		return
+		return err
 	}
-	//envoi du message au serveur
-	_, err = conn.Write([]byte("Je suis le client"))
+	c.conn = conn
+	return nil
+}
 
+func (c *Client) sendMessage(message string) error {
+	writer := bufio.NewWriter(c.conn)
+	_, err := writer.WriteString(message)
 	if err != nil {
-		log.Println("Flush error:", err)
-		return
+		return err
 	}
-	defer conn.Close()
+	err = writer.Flush()
+	if err != nil {
+		return err
+	}
+	return nil
+}
 
-	log.Println("Je suis connecté")
+func (c *Client) listen() {
+	defer c.conn.Close()
 
+	reader := bufio.NewReader(c.conn)
+
+	for {
+		// Read data sent by the server
+		data, err := reader.ReadString('\n')
+		if err != nil {
+			log.Printf("Error reading data from server: %v", err)
+			break
+		}
+		// Print the data received from the server
+		fmt.Print(data)
+	}
 }
