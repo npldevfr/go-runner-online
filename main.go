@@ -21,8 +21,22 @@ const (
 func main() {
 
 	var getTPS bool
+	var isServer bool
+	var isClient bool
 	flag.BoolVar(&getTPS, "tps", false, "Afficher le nombre d'appel à Update par seconde")
+	flag.BoolVar(&isServer, "server", false, "Lancer le jeu en mode serveur")
+	flag.BoolVar(&isClient, "client", false, "Lancer le jeu en mode client avec l'adresse IP du serveur")
 	flag.Parse()
+
+	if isServer {
+		InitServer()
+		return
+	}
+
+	if isClient {
+		InitClient()
+		return
+	}
 
 	ebiten.SetWindowSize(screenWidth, screenHeight)
 	ebiten.SetWindowTitle("LP MiAR -- Programmation répartie (UE03EC2)")
