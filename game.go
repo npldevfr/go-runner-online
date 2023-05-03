@@ -73,3 +73,15 @@ func InitGame() (g Game) {
 
 	return g
 }
+
+// create a function in Game to instantiate a new client
+func (g *Game) createClient(address string) {
+	client := NewClient("TEST 1")
+	err := client.connect(address)
+	if err != nil {
+		return
+	} else {
+		log.Printf("Connexion réussie au serveur %s", address)
+	}
+	g.runners[0].client = client
+}

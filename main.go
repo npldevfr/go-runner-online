@@ -38,22 +38,15 @@ func main() {
 		}
 	}
 
-	if clientIP != "" {
-		client := NewClient("TEST 1")
-		err := client.connect(clientIP)
-		if err != nil {
-			return
-		} else {
-			log.Printf("Connexion réussie au serveur %s", clientIP)
-		}
-		client.sendMessage("Hello world ! 2")
-	}
-
 	ebiten.SetWindowSize(screenWidth, screenHeight)
 	ebiten.SetWindowTitle("LP MiAR -- Programmation répartie (UE03EC2)")
 
 	g := InitGame()
 	g.getTPS = getTPS
+
+	if clientIP != "" {
+		g.createClient(clientIP)
+	}
 
 	err := ebiten.RunGame(&g)
 	log.Print(err)

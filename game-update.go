@@ -129,6 +129,7 @@ func (g *Game) Update() error {
 		}
 	case StateRun:
 		g.UpdateRunners()
+		//g.runners[0].client.sendMessage(FloatToString(g.runners[0].xpos))
 		finished := g.CheckArrival()
 		g.UpdateAnimation()
 		if finished {

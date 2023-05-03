@@ -22,7 +22,7 @@ func NewServer(address string) *Server {
 func (s *Server) Start() error {
 	listener, err := net.Listen("tcp", s.address)
 	if err != nil {
-		return fmt.Errorf("Impossible de démarrer le serveur : %v", err)
+		return fmt.Errorf("impossible de démarrer le serveur : %v", err)
 	}
 	log.Printf("Serveur en attente de connexions sur %s", s.address)
 
