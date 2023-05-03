@@ -2,7 +2,6 @@ package main
 
 import (
 	"bufio"
-	"fmt"
 	"log"
 	"net"
 )
@@ -51,6 +50,6 @@ func (c *Client) listen() {
 			break
 		}
 		// Print the data received from the server
-		fmt.Print(data)
+		log.Printf(data)
 	}
 }

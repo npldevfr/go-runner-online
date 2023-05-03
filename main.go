@@ -30,6 +30,7 @@ func main() {
 	flag.StringVar(&clientIP, "client", "", "Connecter le jeu en tant que client à l'adresse IP spécifiée")
 	flag.Parse()
 
+	// If the game is launched in server mode, start the server
 	if isServer {
 		s := NewServer(":8080")
 		err := s.Start()

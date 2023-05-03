@@ -15,7 +15,6 @@ type Server struct {
 func NewServer(address string) *Server {
 	return &Server{
 		address: address,
-		players: make([]*Client, 0),
 	}
 }
 
@@ -36,6 +35,11 @@ func (s *Server) Start() error {
 		}
 		log.Printf("Nouvelle connexion : %s", conn.RemoteAddr().String())
 		s.addPlayer(conn)
+		log.Printf("Nombre de joueurs connectés : %d", len(s.players))
+		if len(s.players) == 4 {
+			s.broadcast("La partie peut commencer !\n")
+			log.Printf("Start...")
+		}
 	}
 }
 
@@ -61,16 +65,30 @@ func (s *Server) listen(c *Client) {
 		}
 		// print the data received from the client
 		log.Printf("Message reçu de %s : %s", c.name, data)
-		s.broadcast(c, data)
+		//s.broadcast(data)
 	}
 }
 
-func (s *Server) broadcast(sender *Client, data string) {
-	for _, p := range s.players {
-		if p != sender {
-			writer := bufio.NewWriter(p.conn)
-			writer.WriteString(fmt.Sprintf("%s: %s", sender.name, data))
+func (s *Server) broadcast(message string) {
+	// Pour chaque client connecté
+	for _, c := range s.players {
+		// send message to server using bufio writer
+		writer := bufio.NewWriter(c.conn)
+		_, err := writer.WriteString(message + "\n")
+		if err != nil {
+			log.Printf("Error sending message to server: %v", err)
+		} else {
 			writer.Flush()
 		}
+	}
+}
+func (s *Server) sendMessage(c *Client, message string) {
+	// send message to server using bufio writer
+	writer := bufio.NewWriter(c.conn)
+	_, err := writer.WriteString(message + "\n")
+	if err != nil {
+		log.Printf("Error sending message to server: %v", err)
+	} else {
+		writer.Flush()
 	}
 }
