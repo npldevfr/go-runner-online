@@ -1,6 +1,6 @@
 # GO Runner Online (IUT Nantes)
 
-![Bannière](https://ibb.co/m6pzJxk)
+![Bannière](https://i.ibb.co/hD08sqb/Capture-d-e-cran-2023-05-03-a-11-48-29.png)
 
 ## Description
 
