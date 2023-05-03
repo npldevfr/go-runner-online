@@ -8,7 +8,9 @@ import (
 )
 
 type Client struct {
-	conn net.Conn
+	conn   net.Conn
+	name   string
+	runner Runner
 }
 
 func NewClient() *Client {

@@ -9,18 +9,13 @@ import (
 
 type Server struct {
 	address string
-	players []*player
-}
-
-type player struct {
-	conn net.Conn
-	name string
+	players []*Client
 }
 
 func NewServer(address string) *Server {
 	return &Server{
 		address: address,
-		players: make([]*player, 0),
+		players: make([]*Client, 0),
 	}
 }
 
@@ -45,15 +40,15 @@ func (s *Server) Start() error {
 }
 
 func (s *Server) addPlayer(conn net.Conn) {
-	p := &player{
+	p := &Client{
 		conn: conn,
 		name: conn.RemoteAddr().String(),
 	}
 	s.players = append(s.players, p)
-	go p.listen(s)
+	go p.listenS(s)
 }
 
-func (p *player) listen(s *Server) {
+func (p *Client) listen(s *Server) {
 	defer p.conn.Close()
 
 	reader := bufio.NewReader(p.conn)
@@ -70,7 +65,7 @@ func (p *player) listen(s *Server) {
 	}
 }
 
-func (s *Server) broadcast(sender *player, data string) {
+func (s *Server) broadcast(sender *Client, data string) {
 	for _, p := range s.players {
 		if p != sender {
 			writer := bufio.NewWriter(p.conn)
