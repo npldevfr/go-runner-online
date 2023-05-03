@@ -40,6 +40,7 @@ type Runner struct {
 	colorSelected     bool          // Tells if the color scheme is fixed or not
 	animationStep     int           // Current step of the runner animation
 	animationFrame    int           // Number of frames since the last animation step
+	client            *Client       // Client associated with the runner
 }
 
 // ManualUpdate allows to use the keyboard in order to control a runner

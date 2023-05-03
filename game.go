@@ -20,7 +20,7 @@ import (
 type Game struct {
 	state       int           // Current state of the game
 	runnerImage *ebiten.Image // Image with all the sprites of the runners
-	clients     [4]Client     // The four runners used in the game
+	runners     [4]Runner     // The four runners used in the game
 	f           Field         // The running field
 	launchStep  int           // Current step in StateLaunchRun state
 	resultStep  int           // Current step in StateResult state

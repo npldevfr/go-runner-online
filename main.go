@@ -39,7 +39,7 @@ func main() {
 	}
 
 	if clientIP != "" {
-		client := NewClient()
+		client := NewClient("TEST 1")
 		err := client.connect(clientIP)
 		if err != nil {
 			return

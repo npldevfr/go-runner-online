@@ -13,8 +13,10 @@ type Client struct {
 	runner Runner
 }
 
-func NewClient() *Client {
-	return &Client{}
+func NewClient(name string) *Client {
+	return &Client{
+		name: name,
+	}
 }
 
 func (c *Client) connect(address string) error {
