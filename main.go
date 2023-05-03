@@ -46,6 +46,7 @@ func main() {
 		} else {
 			log.Printf("Connexion réussie au serveur %s", clientIP)
 		}
+		client.sendMessage("Hello world ! 2")
 	}
 
 	ebiten.SetWindowSize(screenWidth, screenHeight)

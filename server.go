@@ -49,25 +49,18 @@ func (s *Server) addPlayer(conn net.Conn) {
 }
 
 func (s *Server) listen(c *Client) {
-	defer func(conn net.Conn) {
-		err := conn.Close()
-		if err != nil {
-			log.Printf("Error closing connection: %v", err)
-		}
-	}(c.conn)
-
+	// read data sent by the client using a bufio reader
 	reader := bufio.NewReader(c.conn)
 
 	for {
-		// Read data sent by the client
+		// read data sent by the client
 		data, err := reader.ReadString('\n')
 		if err != nil {
 			log.Printf("Error reading data from client: %v", err)
 			break
 		}
-		// Print the data received from the client
-		log.Printf("%s: %s", c.name, data)
-		// Broadcast the message to all the other clients
+		// print the data received from the client
+		log.Printf("Message reçu de %s : %s", c.name, data)
 		s.broadcast(c, data)
 	}
 }

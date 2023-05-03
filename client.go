@@ -28,19 +28,16 @@ func (c *Client) connect(address string) error {
 	return nil
 }
 
-func (c *Client) sendMessage(message string) error {
+func (c *Client) sendMessage(message string) {
+	// send message to server using bufio writer
 	writer := bufio.NewWriter(c.conn)
-	_, err := writer.WriteString(message)
+	_, err := writer.WriteString(message + "\n")
 	if err != nil {
-		return err
+		log.Printf("Error sending message to server: %v", err)
+	} else {
+		writer.Flush()
 	}
-	err = writer.Flush()
-	if err != nil {
-		return err
-	}
-	return nil
 }
-
 func (c *Client) listen() {
 	defer c.conn.Close()
 
