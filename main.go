@@ -44,6 +44,7 @@ func main() {
 	g := InitGame()
 	g.getTPS = getTPS
 
+	// If the clientIP flag is set, create a client
 	if clientIP != "" {
 		g.createClient(clientIP)
 	}
