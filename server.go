@@ -45,23 +45,30 @@ func (s *Server) addPlayer(conn net.Conn) {
 		name: conn.RemoteAddr().String(),
 	}
 	s.players = append(s.players, p)
-	go p.listenS(s)
+	go s.listen(p)
 }
 
-func (p *Client) listen(s *Server) {
-	defer p.conn.Close()
+func (s *Server) listen(c *Client) {
+	defer func(conn net.Conn) {
+		err := conn.Close()
+		if err != nil {
+			log.Printf("Error closing connection: %v", err)
+		}
+	}(c.conn)
 
-	reader := bufio.NewReader(p.conn)
+	reader := bufio.NewReader(c.conn)
 
 	for {
-		// Read data sent by the player
+		// Read data sent by the client
 		data, err := reader.ReadString('\n')
 		if err != nil {
-			log.Printf("Error reading data from player %s: %v", p.name, err)
+			log.Printf("Error reading data from client: %v", err)
 			break
 		}
-		// Process the data and send it to the other players
-		s.broadcast(p, data)
+		// Print the data received from the client
+		log.Printf("%s: %s", c.name, data)
+		// Broadcast the message to all the other clients
+		s.broadcast(c, data)
 	}
 }
 
