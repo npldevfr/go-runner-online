@@ -1,5 +1,7 @@
 # GO Runner Online (IUT Nantes)
 
+![Bannière](https://ibb.co/m6pzJxk)
+
 ## Description
 
 GO Runner Online est un jeu de course en 2D qui a pour but de terminer avant les autres, la base du project fonctionne
