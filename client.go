@@ -10,11 +10,12 @@ type Client struct {
 	conn   net.Conn
 	name   string
 	runner Runner
+	ready  bool
 }
 
-func NewClient(name string) *Client {
+func NewClient() *Client {
 	return &Client{
-		name: name,
+		ready: false,
 	}
 }
 
@@ -24,6 +25,7 @@ func (c *Client) connect(address string) error {
 		return err
 	}
 	c.conn = conn
+	c.name = conn.RemoteAddr().String()
 	return nil
 }
 
@@ -51,5 +53,10 @@ func (c *Client) listen() {
 		}
 		// Print the data received from the server
 		log.Printf(data)
+		if (data == "La partie peut commencer !\n" ) {
+			c.ready = true
+		}
+
 	}
+
 }

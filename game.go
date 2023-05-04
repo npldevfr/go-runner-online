@@ -25,6 +25,7 @@ type Game struct {
 	launchStep  int           // Current step in StateLaunchRun state
 	resultStep  int           // Current step in StateResult state
 	getTPS      bool          // Help for debug
+
 }
 
 // These constants define the five possible states of the game
@@ -76,13 +77,13 @@ func InitGame() (g Game) {
 
 // create a function in Game to instantiate a new client
 func (g *Game) createClient(address string) {
-	client := NewClient("PLAYER")
+	client := NewClient()
 	err := client.connect(address)
 	if err != nil {
 		return
 	} else {
 		log.Printf("Connexion réussie au serveur %s", address)
-		client.listen()
+		go client.listen()
 	}
 	g.runners[0].client = client
 }
