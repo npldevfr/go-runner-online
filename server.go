@@ -2,9 +2,13 @@ package main
 
 import (
 	"bufio"
+	"bytes"
+	"encoding/base64"
+	"encoding/gob"
 	"fmt"
 	"log"
 	"net"
+	"strings"
 )
 
 type Server struct {
@@ -49,7 +53,8 @@ func (s *Server) addPlayer(conn net.Conn) {
 		name: conn.RemoteAddr().String(),
 	}
 	s.players = append(s.players, p)
-	go s.listen(p)
+	//go s.listen(p)
+	go s.listenForClients(p)
 }
 
 func (s *Server) listen(c *Client) {
@@ -66,6 +71,45 @@ func (s *Server) listen(c *Client) {
 		// print the data received from the client
 		log.Printf("Message reçu de %s : %s", c.name, data)
 		//s.broadcast(data)
+	}
+}
+
+func (s *Server) listenForClients(c *Client) {
+	// read data sent by the client using a bufio reader
+	reader := bufio.NewReader(c.conn)
+
+	for {
+		// read data sent by the client
+		message, err := reader.ReadString('\n')
+		if err != nil {
+			log.Printf("Error reading data from client: %v", err)
+			break
+		}
+
+		// split the message into key and data
+		parts := strings.Split(message, ":")
+		if len(parts) < 2 {
+			log.Printf("Invalid message format: %v", message)
+			continue
+		}
+		key := parts[0]
+		encodedData := parts[1]
+
+		// decode the data using base64 and gob
+		decodedData, err := base64.StdEncoding.DecodeString(encodedData)
+		if err != nil {
+			log.Printf("Error decoding data: %v", err)
+			continue
+		}
+		var data interface{}
+		err = gob.NewDecoder(bytes.NewReader(decodedData)).Decode(&data)
+		if err != nil {
+			log.Printf("Error decoding data: %v", err)
+			continue
+		}
+
+		// print the message received from the client
+		log.Printf("Message reçu de %s avec la clé %s: %v (%T)", c.name, key, data, data)
 	}
 }
 

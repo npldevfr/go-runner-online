@@ -2,6 +2,9 @@ package main
 
 import (
 	"bufio"
+	"bytes"
+	"encoding/base64"
+	"encoding/gob"
 	"log"
 	"net"
 )
@@ -39,6 +42,25 @@ func (c *Client) sendMessage(message string) {
 		writer.Flush()
 	}
 }
+
+func (c *Client) send(key string, data interface{}) {
+	// encode data using gob
+	var buffer bytes.Buffer
+	err := gob.NewEncoder(&buffer).Encode(&data)
+	if err != nil {
+		log.Printf("Error encoding data: %v", err)
+		return
+	}
+	// send message to server using bufio writer
+	writer := bufio.NewWriter(c.conn)
+	_, err = writer.WriteString(key + ":" + base64.StdEncoding.EncodeToString(buffer.Bytes()) + "\n")
+	if err != nil {
+		log.Printf("Error sending message to server: %v", err)
+	} else {
+		writer.Flush()
+	}
+}
+
 func (c *Client) listen() {
 	defer c.conn.Close()
 
@@ -53,7 +75,7 @@ func (c *Client) listen() {
 		}
 		// Print the data received from the server
 		log.Printf(data)
-		if (data == "La partie peut commencer !\n" ) {
+		if data == "La partie peut commencer !\n" {
 			c.ready = true
 		}
 
