@@ -104,6 +104,9 @@ func (r *Runner) UpdateAnimation(runnerImage *ebiten.Image) {
 // runner when the game is in StateChooseRunner state (i.e. at player selection
 // screen)
 func (r *Runner) ManualChoose() (done bool) {
+
+	r.colorScheme = r.client.listenForKey("updateSkin").(int)
+
 	r.colorSelected =
 		(!r.colorSelected && inpututil.IsKeyJustPressed(ebiten.KeySpace)) ||
 			(r.colorSelected && !inpututil.IsKeyJustPressed(ebiten.KeySpace))
@@ -114,7 +117,16 @@ func (r *Runner) ManualChoose() (done bool) {
 			r.colorScheme = (r.colorScheme + 7) % 8
 		}
 	}
-	return r.colorSelected
+
+	r.client.send("updateSkin", struct {
+		Skin int
+	}{Skin: r.colorScheme})
+
+	if r.client.globalState == GlobalLaunchRun && r.colorSelected {
+		return r.colorSelected
+	}
+
+	return false
 }
 
 // RandomChoose allows to randomly select the appearance of a

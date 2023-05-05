@@ -11,15 +11,21 @@ import (
 )
 
 type Client struct {
-	conn   net.Conn
-	name   string
-	runner Runner
-	ready  bool
+	conn        net.Conn
+	name        string
+	runner      Runner
+	globalState int
 }
+
+const (
+	GlobalWelcomeScreen int = iota
+	GlobalChooseRunner
+	GlobalLaunchRun
+)
 
 func NewClient() *Client {
 	return &Client{
-		ready: false,
+		globalState: GlobalWelcomeScreen,
 	}
 }
 
@@ -108,7 +114,7 @@ func (c *Client) listen() {
 		// Switch statement to handle different keys
 		switch key {
 		case "gameStart":
-			c.ready = true
+			c.globalState = GlobalChooseRunner
 		default:
 		}
 	}

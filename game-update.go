@@ -25,7 +25,7 @@ import (
 // HandleWelcomeScreen waits for the player to push SPACE in order to
 // start the game
 func (g *Game) HandleWelcomeScreen() bool {
-	return g.runners[0].client.ready && inpututil.IsKeyJustPressed(ebiten.KeySpace)
+	return g.runners[0].client.globalState == GlobalChooseRunner && inpututil.IsKeyJustPressed(ebiten.KeySpace)
 }
 
 // ChooseRunners loops over all the runners to check which sprite each
@@ -113,7 +113,7 @@ func (g *Game) Update() error {
 	switch g.state {
 	case StateWelcomeScreen:
 		done := g.HandleWelcomeScreen()
-		if done || g.runners[0].client.ready {
+		if done || g.runners[0].client.globalState == GlobalChooseRunner {
 			g.state++
 		}
 	case StateChooseRunner:

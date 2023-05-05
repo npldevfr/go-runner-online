@@ -40,7 +40,7 @@ func (s *Server) Start() error {
 		log.Printf("Nouvelle connexion : %s", conn.RemoteAddr().String())
 		s.addPlayer(conn)
 		log.Printf("Nombre de joueurs connectés : %d", len(s.players))
-		if len(s.players) == 4 {
+		if len(s.players) == 1 {
 			s.broadcast("gameStart", "La partie commence !")
 			log.Printf("Start...")
 		}
