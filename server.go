@@ -41,7 +41,7 @@ func (s *Server) Start() error {
 		s.addPlayer(conn)
 		log.Printf("Nombre de joueurs connectés : %d", len(s.players))
 		if len(s.players) == 4 {
-			s.broadcast("La partie peut commencer !\n")
+			s.broadcast("gameStart", "La partie commence !")
 			log.Printf("Start...")
 		}
 	}
@@ -53,28 +53,10 @@ func (s *Server) addPlayer(conn net.Conn) {
 		name: conn.RemoteAddr().String(),
 	}
 	s.players = append(s.players, p)
-	//go s.listen(p)
-	go s.listenForClients(p)
+	go s.listen(p)
 }
 
 func (s *Server) listen(c *Client) {
-	// read data sent by the client using a bufio reader
-	reader := bufio.NewReader(c.conn)
-
-	for {
-		// read data sent by the client
-		data, err := reader.ReadString('\n')
-		if err != nil {
-			log.Printf("Error reading data from client: %v", err)
-			break
-		}
-		// print the data received from the client
-		log.Printf("Message reçu de %s : %s", c.name, data)
-		//s.broadcast(data)
-	}
-}
-
-func (s *Server) listenForClients(c *Client) {
 	// read data sent by the client using a bufio reader
 	reader := bufio.NewReader(c.conn)
 
@@ -110,22 +92,32 @@ func (s *Server) listenForClients(c *Client) {
 
 		// print the message received from the client
 		log.Printf("Message reçu de %s avec la clé %s: %v (%T)", c.name, key, data, data)
+		s.broadcast(key, data)
 	}
 }
 
-func (s *Server) broadcast(message string) {
-	// Pour chaque client connecté
+func (s *Server) broadcast(key string, data interface{}) {
 	for _, c := range s.players {
-		// send message to server using bufio writer
+		var buffer bytes.Buffer
+		err := gob.NewEncoder(&buffer).Encode(&data)
+		if err != nil {
+			log.Printf("Error encoding data: %v", err)
+			return
+		}
 		writer := bufio.NewWriter(c.conn)
-		_, err := writer.WriteString(message + "\n")
+		_, err = writer.WriteString(key + ":" + base64.StdEncoding.EncodeToString(buffer.Bytes()) + "\n")
 		if err != nil {
 			log.Printf("Error sending message to server: %v", err)
 		} else {
-			writer.Flush()
+			err := writer.Flush()
+			if err != nil {
+				return
+			}
 		}
 	}
 }
+
+// sendMessage est déprécié, car remplacé par broadcast
 func (s *Server) sendMessage(c *Client, message string) {
 	// send message to server using bufio writer
 	writer := bufio.NewWriter(c.conn)

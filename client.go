@@ -7,6 +7,7 @@ import (
 	"encoding/gob"
 	"log"
 	"net"
+	"strings"
 )
 
 type Client struct {
@@ -61,8 +62,15 @@ func (c *Client) send(key string, data interface{}) {
 	}
 }
 
+// Start listening for messages from the server
+// Start listening for messages from the server
 func (c *Client) listen() {
-	defer c.conn.Close()
+	defer func(conn net.Conn) {
+		err := conn.Close()
+		if err != nil {
+			log.Printf("Error closing connection: %v", err)
+		}
+	}(c.conn)
 
 	reader := bufio.NewReader(c.conn)
 
@@ -73,12 +81,78 @@ func (c *Client) listen() {
 			log.Printf("Error reading data from server: %v", err)
 			break
 		}
-		// Print the data received from the server
-		log.Printf(data)
-		if data == "La partie peut commencer !\n" {
-			c.ready = true
+
+		// split the message into key and data
+		parts := strings.Split(data, ":")
+		if len(parts) < 2 {
+			log.Printf("Invalid message format: %v", data)
+			continue
+		}
+		key := parts[0]
+		encodedData := parts[1]
+
+		// decode the data using base64 and gob
+		decodedData, err := base64.StdEncoding.DecodeString(encodedData)
+		if err != nil {
+			log.Printf("Error decoding data: %v", err)
+			continue
 		}
 
+		var eventData interface{}
+		err = gob.NewDecoder(bytes.NewReader(decodedData)).Decode(&eventData)
+		if err != nil {
+			log.Printf("Error decoding data: %v", err)
+			continue
+		}
+
+		// Switch statement to handle different keys
+		switch key {
+		case "gameStart":
+			c.ready = true
+		default:
+		}
+	}
+}
+
+// Listen for a specific key and return the event data
+func (c *Client) listenForKey(key string) interface{} {
+	encodedData := ""
+
+	// Wait for message with the specified key
+	for {
+		data, err := bufio.NewReader(c.conn).ReadString('\n')
+		if err != nil {
+			log.Printf("Error reading data from server: %v", err)
+			return nil
+		}
+
+		// split the message into key and data
+		parts := strings.Split(data, ":")
+		if len(parts) < 2 {
+			log.Printf("Invalid message format: %v", data)
+			continue
+		}
+		eventKey := parts[0]
+		encodedData = parts[1]
+
+		if eventKey == key {
+			break
+		}
 	}
 
+	// decode the data using base64 and gob
+	decodedData, err := base64.StdEncoding.DecodeString(encodedData)
+	if err != nil {
+		log.Printf("Error decoding data: %v", err)
+		return nil
+	}
+
+	var eventData interface{}
+	err = gob.NewDecoder(bytes.NewReader(decodedData)).Decode(&eventData)
+	if err != nil {
+		log.Printf("Error decoding data: %v", err)
+		return nil
+	}
+
+	return eventData
 }
