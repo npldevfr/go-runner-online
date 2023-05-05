@@ -31,7 +31,7 @@ func (g *Game) DrawWelcomeScreen(screen *ebiten.Image) {
 	)
 	ebitenutil.DebugPrintAt(
 		screen,
-		fmt.Sprint("Press SPACE to play"),
+		fmt.Sprint("En attente des joueurs..."),
 		screenWidth/2-60,
 		screenHeight/2+10,
 	)

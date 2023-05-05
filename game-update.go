@@ -113,7 +113,7 @@ func (g *Game) Update() error {
 	switch g.state {
 	case StateWelcomeScreen:
 		done := g.HandleWelcomeScreen()
-		if done {
+		if done || g.runners[0].client.ready {
 			g.state++
 		}
 	case StateChooseRunner:
