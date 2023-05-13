@@ -15,6 +15,7 @@ type Client struct {
 	name        string
 	runner      Runner
 	globalState int
+	otherClient []*Client
 }
 
 const (
@@ -112,7 +113,10 @@ func (c *Client) listen() {
 		}
 
 		// Switch statement to handle different keys
-		switch key {
+		switch key { /*
+			case "newPlayer":
+				c.otherClient = append(c.otherClient, eventData.(*Client))
+				log.Printf("New player joined: %v", eventData.(*Client).name)*/
 		case "gameStart":
 			c.globalState = GlobalChooseRunner
 		default:

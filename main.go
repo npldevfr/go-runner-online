@@ -7,10 +7,9 @@ package main
 
 import (
 	"flag"
+	"github.com/hajimehoshi/ebiten/v2"
 	_ "image/png"
 	"log"
-
-	"github.com/hajimehoshi/ebiten/v2"
 )
 
 const (

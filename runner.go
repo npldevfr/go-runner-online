@@ -105,7 +105,7 @@ func (r *Runner) UpdateAnimation(runnerImage *ebiten.Image) {
 // screen)
 func (r *Runner) ManualChoose() (done bool) {
 
-	r.colorScheme = r.client.listenForKey("updateSkin").(int)
+	//r.colorScheme = r.client.listenForKey("updateSkin").(int)
 
 	r.colorSelected =
 		(!r.colorSelected && inpututil.IsKeyJustPressed(ebiten.KeySpace)) ||
@@ -118,15 +118,15 @@ func (r *Runner) ManualChoose() (done bool) {
 		}
 	}
 
-	r.client.send("updateSkin", struct {
+	/*r.client.send("updateSkin", struct {
 		Skin int
 	}{Skin: r.colorScheme})
 
 	if r.client.globalState == GlobalLaunchRun && r.colorSelected {
 		return r.colorSelected
-	}
+	}*/
 
-	return false
+	return r.colorSelected
 }
 
 // RandomChoose allows to randomly select the appearance of a

@@ -16,9 +16,10 @@
 package main
 
 import (
+	"github.com/hajimehoshi/ebiten/v2"
 	"time"
 
-	"github.com/hajimehoshi/ebiten/v2"
+	_ "github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
