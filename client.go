@@ -36,7 +36,6 @@ func (c *Client) connect(address string) error {
 		return err
 	}
 	c.conn = conn
-	c.name = conn.RemoteAddr().String()
 	return nil
 }
 
@@ -114,10 +113,14 @@ func (c *Client) listen() {
 
 		// Switch statement to handle different keys
 		switch key {
+		case "newLocalRemote":
+			c.name = eventData.(string)
 		case "newPlayer":
-			c.otherClient = append(c.otherClient, eventData.(string))
-			log.Printf("New player joined: %v", c.otherClient)
+			if eventData.(string) != c.name {
+				c.otherClient = append(c.otherClient, eventData.(string))
+			}
 		case "gameStart":
+			log.Printf("New player joined: %v", c.otherClient)
 			c.globalState = GlobalChooseRunner
 		default:
 		}

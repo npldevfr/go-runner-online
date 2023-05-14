@@ -39,9 +39,13 @@ func (s *Server) Start() error {
 		}
 		log.Printf("Nouvelle connexion : %s", conn.RemoteAddr().String())
 		s.addPlayer(conn)
-		s.broadcast("newPlayer", conn.RemoteAddr().String())
 		log.Printf("Nombre de joueurs connectés : %d", len(s.players))
-		if len(s.players) == 2 {
+		if len(s.players) == 3 {
+			// Quand on a 2 joueurs, on envoie la liste des autres joueurs à chaque joueur
+			for _, c := range s.players {
+				s.broadcast("newPlayer", c.conn.RemoteAddr().String())
+			}
+
 			s.broadcast("gameStart", nil)
 			log.Printf("Start...")
 		}
@@ -54,6 +58,8 @@ func (s *Server) addPlayer(conn net.Conn) {
 		name: conn.RemoteAddr().String(),
 	}
 	s.players = append(s.players, p)
+	p.send("newLocalRemote", p.name)
+
 	go s.listen(p)
 }
 
