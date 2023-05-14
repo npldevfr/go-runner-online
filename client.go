@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"encoding/base64"
 	"encoding/gob"
+	"fmt"
 	"log"
 	"net"
 	"strings"
@@ -123,6 +124,8 @@ func (c *Client) listen() {
 			}
 		case "gameStart":
 			c.globalState = GlobalChooseRunner
+		case "gameEnd":
+			fmt.Printf(eventData.(string))
 		default:
 		}
 	}
