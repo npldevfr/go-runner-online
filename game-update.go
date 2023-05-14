@@ -16,7 +16,6 @@
 package main
 
 import (
-	"github.com/hajimehoshi/ebiten/v2"
 	"time"
 
 	_ "github.com/hajimehoshi/ebiten/v2"
@@ -113,8 +112,14 @@ func (g *Game) HandleResults() bool {
 func (g *Game) Update() error {
 	switch g.state {
 	case StateWelcomeScreen:
+		var localRunner Runner = g.runners[0]
 		done := g.HandleWelcomeScreen()
-		if done || g.runners[0].client.globalState == GlobalChooseRunner {
+
+		if done || localRunner.client.globalState == GlobalChooseRunner {
+
+			for i := 1; i < len(localRunner.client.otherClient); i++ {
+				g.runners[i].client.name = localRunner.client.otherClient[i]
+			}
 			g.state++
 		}
 	case StateChooseRunner:

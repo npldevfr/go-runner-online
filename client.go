@@ -120,7 +120,6 @@ func (c *Client) listen() {
 				c.otherClient = append(c.otherClient, eventData.(string))
 			}
 		case "gameStart":
-			log.Printf("New player joined: %v", c.otherClient)
 			c.globalState = GlobalChooseRunner
 		default:
 		}
