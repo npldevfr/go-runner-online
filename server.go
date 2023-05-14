@@ -12,20 +12,13 @@ import (
 	"time"
 )
 
-type ServerClient struct {
-	Client
-	serverRunDuration time.Duration
-	conn              net.Conn
-	name              string
-}
-
 type Server struct {
 	address string
-	players []*ServerClient
+	players []*Runner
 }
 
 const (
-	GameMaxPlayers = 2
+	GameMaxPlayers = 3
 )
 
 func NewServer(address string) *Server {
@@ -56,7 +49,7 @@ func (s *Server) Start() error {
 
 			// Quand on a x joueurs, on envoie la liste des autres joueurs à chaque joueur
 			for _, c := range s.players {
-				s.broadcast("newPlayer", c.conn.RemoteAddr().String())
+				s.broadcast("newPlayer", c.client.conn.RemoteAddr().String())
 			}
 
 			// Début de la partie
@@ -67,20 +60,24 @@ func (s *Server) Start() error {
 }
 
 func (s *Server) addPlayer(conn net.Conn) {
-	p := &ServerClient{
-		conn:              conn,
-		serverRunDuration: 0,
-		name:              conn.RemoteAddr().String(),
+	p := &Client{
+		conn: conn,
+		name: conn.RemoteAddr().String(),
 	}
-	s.players = append(s.players, p)
+	r := &Runner{
+		client:  p,
+		runTime: 0,
+	}
+
+	s.players = append(s.players, r)
 	p.send("newLocalRemote", p.name)
 
-	go s.listen(p)
+	go s.listen(r)
 }
 
-func (s *Server) listen(c *ServerClient) {
+func (s *Server) listen(r *Runner) {
 	// read data sent by the client using a bufio reader
-	reader := bufio.NewReader(c.conn)
+	reader := bufio.NewReader(r.client.conn)
 
 	for {
 		// read data sent by the client
@@ -113,15 +110,15 @@ func (s *Server) listen(c *ServerClient) {
 		}
 
 		// print the message received from the client
-		log.Printf("Message reçu de %s avec la clé %s: %v (%T)", c.name, key, data, data)
+		log.Printf("Message reçu de %s avec la clé %s: %v (%T)", r.client.name, key, data, data)
 
 		switch key {
 		case "runnerLaneFinished":
-			c.serverRunDuration = data.(time.Duration)
+			r.runTime = data.(time.Duration)
 
 			var allPlayersFinished = true
 			for _, p := range s.players {
-				if p.serverRunDuration == 0 {
+				if p.runTime == 0 {
 					allPlayersFinished = false
 				}
 			}
@@ -130,8 +127,8 @@ func (s *Server) listen(c *ServerClient) {
 				var runDurations []interface{}
 				for _, p := range s.players {
 					runDurations = append(runDurations, map[string]interface{}{
-						"name":     p.name,
-						"duration": p.serverRunDuration,
+						"name":     p.client.name,
+						"duration": p.runTime,
 					})
 				}
 
@@ -142,17 +139,18 @@ func (s *Server) listen(c *ServerClient) {
 }
 
 func (s *Server) broadcast(key string, data interface{}) {
-
+	gob.Register(time.Duration(0))
+	gob.Register([]interface{}{})
+	gob.Register(map[string]interface{}{})
 	for _, c := range s.players {
-		gob.Register(time.Duration(0))
 
 		var buffer bytes.Buffer
 		err := gob.NewEncoder(&buffer).Encode(&data)
 		if err != nil {
-			log.Printf("Error encoding data: %v", err)
+			log.Printf("Error encoding data broadcast: %v", err)
 			return
 		}
-		writer := bufio.NewWriter(c.conn)
+		writer := bufio.NewWriter(c.client.conn)
 		_, err = writer.WriteString(key + ":" + base64.StdEncoding.EncodeToString(buffer.Bytes()) + "\n")
 		if err != nil {
 			log.Printf("Error sending message to server: %v", err)
@@ -166,7 +164,7 @@ func (s *Server) broadcast(key string, data interface{}) {
 }
 
 // sendMessage est déprécié, car remplacé par broadcast
-func (s *Server) sendMessage(c *ServerClient, message string) {
+func (s *Server) sendMessage(c *Client, message string) {
 	// send message to server using bufio writer
 	writer := bufio.NewWriter(c.conn)
 	_, err := writer.WriteString(message + "\n")

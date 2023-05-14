@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"encoding/base64"
 	"encoding/gob"
-	"fmt"
 	"log"
 	"net"
 	"strings"
@@ -100,6 +99,12 @@ func (c *Client) listen() {
 		key := parts[0]
 		encodedData := parts[1]
 
+		//Register "name" for gob
+		//name not registered for interface: "[]interface {}"
+		gob.Register([]interface{}{})
+		gob.Register(map[string]interface{}{})
+		gob.Register(time.Duration(0))
+
 		// decode the data using base64 and gob
 		decodedData, err := base64.StdEncoding.DecodeString(encodedData)
 		if err != nil {
@@ -121,12 +126,18 @@ func (c *Client) listen() {
 		case "newPlayer":
 			if eventData.(string) != c.name {
 				c.otherClient = append(c.otherClient, eventData.(string))
+				log.Printf("New player: %v", eventData)
 			}
 		case "gameStart":
 			c.globalState = GlobalChooseRunner
 		case "gameEnd":
-			fmt.Printf(eventData.(string))
-		default:
+			for _, item := range eventData.([]interface{}) {
+				if data, ok := item.(map[string]interface{}); ok {
+					if data["name"] != c.name {
+						log.Printf("%v a fait %v", data["name"], data["duration"])
+					}
+				}
+			}
 		}
 	}
 }
