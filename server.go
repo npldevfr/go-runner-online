@@ -9,6 +9,7 @@ import (
 	"log"
 	"net"
 	"strings"
+	"time"
 )
 
 type Server struct {
@@ -67,6 +68,8 @@ func (s *Server) listen(c *Client) {
 	// read data sent by the client using a bufio reader
 	reader := bufio.NewReader(c.conn)
 
+	fmt.Printf("hello")
+
 	for {
 		// read data sent by the client
 		message, err := reader.ReadString('\n')
@@ -99,12 +102,21 @@ func (s *Server) listen(c *Client) {
 
 		// print the message received from the client
 		log.Printf("Message reçu de %s avec la clé %s: %v (%T)", c.name, key, data, data)
+
+		switch key {
+		case "runnerLaneFinished":
+
+		}
+
 		s.broadcast(key, data)
 	}
 }
 
 func (s *Server) broadcast(key string, data interface{}) {
+
 	for _, c := range s.players {
+		gob.Register(time.Duration(0))
+
 		var buffer bytes.Buffer
 		err := gob.NewEncoder(&buffer).Encode(&data)
 		if err != nil {

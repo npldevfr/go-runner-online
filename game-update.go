@@ -16,10 +16,9 @@
 package main
 
 import (
-	"time"
-
-	_ "github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
+	"time"
 )
 
 // HandleWelcomeScreen waits for the player to push SPACE in order to
@@ -110,9 +109,9 @@ func (g *Game) HandleResults() bool {
 // Depending of the current state of the game it calls the above utilitary
 // function and then it may update the state of the game
 func (g *Game) Update() error {
+	var localRunner Runner = g.runners[0]
 	switch g.state {
 	case StateWelcomeScreen:
-		var localRunner Runner = g.runners[0]
 		done := g.HandleWelcomeScreen()
 
 		if done || localRunner.client.globalState == GlobalChooseRunner {
@@ -139,6 +138,7 @@ func (g *Game) Update() error {
 		finished := g.CheckArrival()
 		g.UpdateAnimation()
 		if finished {
+			localRunner.client.send("runnerLaneFinished", localRunner.runTime)
 			g.state++
 		}
 	case StateResult:

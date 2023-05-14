@@ -8,12 +8,12 @@ import (
 	"log"
 	"net"
 	"strings"
+	"time"
 )
 
 type Client struct {
 	conn        net.Conn
 	name        string
-	runner      Runner
 	globalState int
 	otherClient []string
 }
@@ -52,6 +52,8 @@ func (c *Client) sendMessage(message string) {
 
 func (c *Client) send(key string, data interface{}) {
 	// encode data using gob
+	gob.Register(time.Duration(0))
+
 	var buffer bytes.Buffer
 	err := gob.NewEncoder(&buffer).Encode(&data)
 	if err != nil {
