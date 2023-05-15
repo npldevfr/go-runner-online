@@ -18,7 +18,7 @@ type Server struct {
 }
 
 const (
-	GameMaxPlayers = 2
+	GameMaxPlayers = 4
 )
 
 func NewServer(address string) *Server {
@@ -165,6 +165,7 @@ func (s *Server) listen(r *Runner) {
 			}
 			s.addPlayer(r.client.conn)
 			if len(s.players) == GameMaxPlayers {
+				time.Sleep(1 * time.Second)
 				s.broadcast("gameStart", nil)
 			}
 		}
@@ -193,17 +194,5 @@ func (s *Server) broadcast(key string, data interface{}) {
 				return
 			}
 		}
-	}
-}
-
-// sendMessage est déprécié, car remplacé par broadcast
-func (s *Server) sendMessage(c *Client, message string) {
-	// send message to server using bufio writer
-	writer := bufio.NewWriter(c.conn)
-	_, err := writer.WriteString(message + "\n")
-	if err != nil {
-		log.Printf("Error sending message to server: %v", err)
-	} else {
-		writer.Flush()
 	}
 }
