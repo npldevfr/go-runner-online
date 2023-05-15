@@ -16,6 +16,7 @@ import (
 	"fmt"
 	"image"
 	"image/color"
+	"strconv"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
@@ -34,6 +35,12 @@ func (g *Game) DrawWelcomeScreen(screen *ebiten.Image) {
 		fmt.Sprint("En attente des joueurs..."),
 		screenWidth/2-60,
 		screenHeight/2+10,
+	)
+	ebitenutil.DebugPrintAt(
+		screen,
+		fmt.Sprint("Nombre de joueur(s) connecté(s) : "+strconv.Itoa(g.runners[0].client.nbPlayers)),
+		screenWidth/2-120,
+		screenHeight/2+30,
 	)
 }
 

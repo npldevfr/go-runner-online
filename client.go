@@ -18,6 +18,7 @@ type Client struct {
 	otherClient []string
 	game        *Game
 	isAI        bool
+	nbPlayers   int
 }
 
 const (
@@ -127,6 +128,8 @@ func (c *Client) listen() {
 		switch key {
 		case "newLocalRemote":
 			c.name = eventData.(string)
+		case "nbPlayers":
+			c.nbPlayers = eventData.(int)
 		case "newPlayer":
 			if eventData.(string) != c.name {
 				c.otherClient = append(c.otherClient, eventData.(string))
