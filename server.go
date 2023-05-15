@@ -25,6 +25,7 @@ func NewServer(address string, nbPlayers int) *Server {
 	}
 }
 
+// start the server
 func (s *Server) Start() error {
 	listener, err := net.Listen("tcp", s.address)
 	if err != nil {
@@ -57,6 +58,7 @@ func (s *Server) Start() error {
 	}
 }
 
+// add new player to the server
 func (s *Server) addPlayer(conn net.Conn) {
 	p := &Client{
 		conn: conn,
@@ -73,6 +75,7 @@ func (s *Server) addPlayer(conn net.Conn) {
 	go s.listen(r)
 }
 
+// listen for incoming message from the client
 func (s *Server) listen(r *Runner) {
 	// read data sent by the client using a bufio reader
 	reader := bufio.NewReader(r.client.conn)
@@ -110,6 +113,7 @@ func (s *Server) listen(r *Runner) {
 		// print the message received from the client
 		log.Printf("Message reçu de %s avec la clé %s: %v (%T)", r.client.name, key, data, data)
 
+		// switch on the key to handle the message and select the correct state of game
 		switch key {
 		case "readyToRun":
 			r.colorSelected = data.(bool)
@@ -170,6 +174,7 @@ func (s *Server) listen(r *Runner) {
 	}
 }
 
+// broadcast a message to all clients and encode the data using gob and base64
 func (s *Server) broadcast(key string, data interface{}) {
 	gob.Register(time.Duration(0))
 	gob.Register([]interface{}{})

@@ -42,6 +42,8 @@ func (c *Client) connect(address string) error {
 	c.conn = conn
 	return nil
 }
+
+// send message to server from client
 func (c *Client) send(key string, data interface{}) {
 	// encode data using gob
 	gob.Register(time.Duration(0))
