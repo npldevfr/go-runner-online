@@ -13,17 +13,15 @@ import (
 )
 
 type Server struct {
-	address string
-	players []*Runner
+	address   string
+	players   []*Runner
+	nbPlayers int
 }
 
-const (
-	GameMaxPlayers = 4
-)
-
-func NewServer(address string) *Server {
+func NewServer(address string, nbPlayers int) *Server {
 	return &Server{
-		address: address,
+		nbPlayers: nbPlayers,
+		address:   address,
 	}
 }
 
@@ -46,7 +44,7 @@ func (s *Server) Start() error {
 		s.addPlayer(conn)
 		s.broadcast("nbPlayers", len(s.players))
 		log.Printf("Nombre de joueurs connectés : %d", len(s.players))
-		if len(s.players) == GameMaxPlayers {
+		if len(s.players) == s.nbPlayers {
 
 			// Quand on a x joueurs, on envoie la liste des autres joueurs à chaque joueur
 			for _, c := range s.players {
@@ -160,11 +158,11 @@ func (s *Server) listen(r *Runner) {
 				s.broadcast("gameEnd", runDurations)
 			}
 		case "readyToReRun":
-			if len(s.players) == GameMaxPlayers {
+			if len(s.players) == s.nbPlayers {
 				s.players = []*Runner{}
 			}
 			s.addPlayer(r.client.conn)
-			if len(s.players) == GameMaxPlayers {
+			if len(s.players) == s.nbPlayers {
 				time.Sleep(1 * time.Second)
 				s.broadcast("gameStart", nil)
 			}

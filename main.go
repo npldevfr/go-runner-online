@@ -20,18 +20,20 @@ const (
 func main() {
 
 	var (
-		getTPS   bool
-		isServer bool
-		clientIP string
+		getTPS        bool
+		isServer      bool
+		clientIP      string
+		nombreJoueurs int
 	)
 	flag.BoolVar(&getTPS, "tps", false, "Afficher le nombre d'appel à Update par seconde")
 	flag.BoolVar(&isServer, "server", false, "Lancer le jeu en mode serveur")
 	flag.StringVar(&clientIP, "client", "", "Connecter le jeu en tant que client à l'adresse IP spécifiée")
+	flag.IntVar(&nombreJoueurs, "players", 4, "Nombre de joueurs")
 	flag.Parse()
 
 	// If the game is launched in server mode, start the server
 	if isServer {
-		s := NewServer(":8080")
+		s := NewServer(":8080", nombreJoueurs)
 		err := s.Start()
 		if err != nil {
 			return
