@@ -18,7 +18,7 @@ type Server struct {
 }
 
 const (
-	GameMaxPlayers = 3
+	GameMaxPlayers = 2
 )
 
 func NewServer(address string) *Server {
@@ -158,6 +158,14 @@ func (s *Server) listen(r *Runner) {
 				}
 
 				s.broadcast("gameEnd", runDurations)
+			}
+		case "readyToReRun":
+			if len(s.players) == GameMaxPlayers {
+				s.players = []*Runner{}
+			}
+			s.addPlayer(r.client.conn)
+			if len(s.players) == GameMaxPlayers {
+				s.broadcast("gameStart", nil)
 			}
 		}
 	}

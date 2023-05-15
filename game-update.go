@@ -102,6 +102,7 @@ func (g *Game) HandleResults() bool {
 	}
 	if g.resultStep >= 4 && inpututil.IsKeyJustPressed(ebiten.KeySpace) {
 		g.resultStep = 0
+		g.runners[0].client.send("readyToReRun", nil)
 		return true
 	}
 	return false
@@ -164,7 +165,8 @@ func (g *Game) Update() error {
 		done := g.HandleResults()
 		if done {
 			g.Reset()
-			g.state = StateLaunchRun
+			g.state = StateChooseRunner
+			localRunner.client.globalState = GlobalChooseRunner
 		}
 	}
 	return nil
