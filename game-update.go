@@ -116,8 +116,9 @@ func (g *Game) Update() error {
 
 		if done || localRunner.client.globalState == GlobalChooseRunner {
 
-			for i := 1; i < len(localRunner.client.otherClient); i++ {
-				g.runners[i].client.name = localRunner.client.otherClient[i]
+			for i := 0; i < len(localRunner.client.otherClient); i++ {
+				client := Client{name: localRunner.client.otherClient[i]}
+				g.runners[i+1].client = &client
 			}
 			g.state++
 		}
