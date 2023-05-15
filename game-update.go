@@ -18,6 +18,7 @@ package main
 import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
+	"strconv"
 	"time"
 )
 
@@ -120,12 +121,14 @@ func (g *Game) Update() error {
 				client := Client{name: localRunner.client.otherClient[i]}
 				g.runners[i+1].client = &client
 			}
-			if len(localRunner.client.otherClient) < GameMaxPlayers {
-				client := Client{name: "IA"}
-				for i := len(localRunner.client.otherClient); i < GameMaxPlayers; i++ {
+
+			if len(localRunner.client.otherClient) < 3 {
+				for i := len(localRunner.client.otherClient); i < 3; i++ {
+					client := Client{name: "IA " + strconv.Itoa(i)}
 					g.runners[i+1].client = &client
 				}
 			}
+
 			g.state++
 		}
 	case StateChooseRunner:

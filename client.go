@@ -146,6 +146,7 @@ func (c *Client) listen() {
 					}
 				}
 			}
+
 		case "gameEnd":
 			for _, item := range eventData.([]interface{}) {
 				if data, ok := item.(map[string]interface{}); ok {

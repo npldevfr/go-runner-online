@@ -18,7 +18,7 @@ type Server struct {
 }
 
 const (
-	GameMaxPlayers = 2
+	GameMaxPlayers = 4
 )
 
 func NewServer(address string) *Server {
