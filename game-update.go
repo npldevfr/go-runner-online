@@ -18,6 +18,7 @@ package main
 import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
+	"log"
 	"time"
 )
 
@@ -120,6 +121,15 @@ func (g *Game) Update() error {
 				client := Client{name: localRunner.client.otherClient[i]}
 				g.runners[i+1].client = &client
 			}
+			if len(localRunner.client.otherClient) < GameMaxPlayers {
+				client := Client{name: "IA"}
+				for i := len(localRunner.client.otherClient); i < GameMaxPlayers; i++ {
+					g.runners[i+1].client = &client
+				}
+			}
+			for i := range g.runners {
+				log.Println(" test" + g.runners[i].client.name)
+			}
 			g.state++
 		}
 	case StateChooseRunner:
@@ -138,8 +148,12 @@ func (g *Game) Update() error {
 		//g.runners[0].client.sendMessage(FloatToString(g.runners[0].xpos))
 		finished := g.CheckArrival()
 		g.UpdateAnimation()
-		if finished {
+		if finished && g.noSend {
 			localRunner.client.send("runnerLaneFinished", localRunner.runTime)
+			g.noSend = false
+		}
+		if localRunner.client.globalState == GlobalStateResult {
+			g.noSend = true
 			g.state++
 		}
 	case StateResult:

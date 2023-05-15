@@ -16,12 +16,14 @@ type Client struct {
 	name        string
 	globalState int
 	otherClient []string
+	game        *Game
 }
 
 const (
 	GlobalWelcomeScreen int = iota
 	GlobalChooseRunner
 	GlobalLaunchRun
+	GlobalStateResult = 4
 )
 
 func NewClient() *Client {
@@ -135,9 +137,16 @@ func (c *Client) listen() {
 				if data, ok := item.(map[string]interface{}); ok {
 					if data["name"] != c.name {
 						log.Printf("%v a fait %v", data["name"], data["duration"])
+						for i := range c.game.runners {
+							if c.game.runners[i].client.name == data["name"] {
+								log.Printf("test")
+								c.game.runners[i].runTime = data["duration"].(time.Duration)
+							}
+						}
 					}
 				}
 			}
+			c.globalState = GlobalStateResult
 		}
 	}
 }

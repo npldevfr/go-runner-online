@@ -26,7 +26,7 @@ type Game struct {
 	launchStep  int           // Current step in StateLaunchRun state
 	resultStep  int           // Current step in StateResult state
 	getTPS      bool          // Help for debug
-
+	noSend      bool
 }
 
 // These constants define the five possible states of the game
@@ -47,7 +47,7 @@ func InitGame() (g Game) {
 		log.Fatal(err)
 	}
 	g.runnerImage = ebiten.NewImageFromImage(img)
-
+	g.noSend = true
 	// Define game parameters
 	start := 50.0
 	finish := float64(screenWidth - 50)
@@ -88,6 +88,7 @@ func (g *Game) getRunnerByName(name string) *Runner {
 // create a function in Game to instantiate a new client
 func (g *Game) createClient(address string) {
 	client := NewClient()
+	client.game = g
 	err := client.connect(address)
 	if err != nil {
 		return
