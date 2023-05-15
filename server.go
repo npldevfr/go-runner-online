@@ -18,7 +18,7 @@ type Server struct {
 }
 
 const (
-	GameMaxPlayers = 4
+	GameMaxPlayers = 2
 )
 
 func NewServer(address string) *Server {
@@ -132,7 +132,11 @@ func (s *Server) listen(r *Runner) {
 				"name": r.client.name,
 				"skin": data,
 			})
-			log.Printf("Skin %d pour %s", data, r.client.name)
+		case "updatePos":
+			s.broadcast("updatePos", map[string]interface{}{
+				"name": r.client.name,
+				"pos":  data,
+			})
 		case "runnerLaneFinished":
 			r.runTime = data.(time.Duration)
 

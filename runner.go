@@ -48,6 +48,10 @@ type Runner struct {
 func (r *Runner) ManualUpdate() {
 	r.UpdateSpeed(inpututil.IsKeyJustPressed(ebiten.KeySpace))
 	r.UpdatePos()
+
+	if r.xpos > 50.000000 {
+		r.client.send("updatePos", r.xpos)
+	}
 }
 
 // RandomUpdate allows to randomly control a runner when the game is in
@@ -117,15 +121,14 @@ func (r *Runner) ManualChoose() (done bool) {
 			r.colorScheme = (r.colorScheme + 7) % 8
 		}
 	}
-	if (!r.colorSelected) && (inpututil.IsKeyJustPressed(ebiten.KeyRight)|| inpututil.IsKeyJustPressed(ebiten.KeyLeft)) {
+	if (!r.colorSelected) && (inpututil.IsKeyJustPressed(ebiten.KeyRight) || inpututil.IsKeyJustPressed(ebiten.KeyLeft)) {
 		r.client.send("updateSkin", r.colorScheme)
 	}
 
-
-/*
-	if r.client.globalState == GlobalLaunchRun && r.colorSelected {
-		return r.colorSelected
-	}*/
+	/*
+		if r.client.globalState == GlobalLaunchRun && r.colorSelected {
+			return r.colorSelected
+		}*/
 
 	return r.colorSelected
 }

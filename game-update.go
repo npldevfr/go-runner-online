@@ -60,7 +60,9 @@ func (g *Game) UpdateRunners() {
 	for i := range g.runners {
 		if i == 0 {
 			g.runners[i].ManualUpdate()
-		} else {
+		}
+
+		if g.runners[i].client.isAI {
 			g.runners[i].RandomUpdate()
 		}
 	}
@@ -118,13 +120,13 @@ func (g *Game) Update() error {
 		if done || localRunner.client.globalState == GlobalChooseRunner {
 
 			for i := 0; i < len(localRunner.client.otherClient); i++ {
-				client := Client{name: localRunner.client.otherClient[i]}
+				client := Client{name: localRunner.client.otherClient[i], isAI: false}
 				g.runners[i+1].client = &client
 			}
 
 			if len(localRunner.client.otherClient) < 3 {
 				for i := len(localRunner.client.otherClient); i < 3; i++ {
-					client := Client{name: "IA " + strconv.Itoa(i)}
+					client := Client{name: "IA " + strconv.Itoa(i), isAI: true}
 					g.runners[i+1].client = &client
 				}
 			}
@@ -147,7 +149,6 @@ func (g *Game) Update() error {
 		}
 	case StateRun:
 		g.UpdateRunners()
-		//g.runners[0].client.sendMessage(FloatToString(g.runners[0].xpos))
 		finished := g.CheckArrival()
 		g.UpdateAnimation()
 		if finished && g.noSend {

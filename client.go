@@ -17,6 +17,7 @@ type Client struct {
 	globalState int
 	otherClient []string
 	game        *Game
+	isAI        bool
 }
 
 const (
@@ -142,6 +143,18 @@ func (c *Client) listen() {
 					for i := range c.game.runners {
 						if c.game.runners[i].client.name == data["name"] {
 							c.game.runners[i].colorScheme = data["skin"].(int)
+						}
+					}
+				}
+			}
+
+		case "updatePos":
+			if data, ok := eventData.(map[string]interface{}); ok {
+				if data["name"] != c.name {
+					for i := range c.game.runners {
+						if c.game.runners[i].client.name == data["name"] {
+							c.game.runners[i].xpos = data["pos"].(float64)
+							c.game.UpdateAnimation()
 						}
 					}
 				}
