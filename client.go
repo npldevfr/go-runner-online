@@ -131,19 +131,21 @@ func (c *Client) listen() {
 				c.otherClient = append(c.otherClient, eventData.(string))
 				log.Printf("New player: %v", eventData)
 			}
-		case "gameStart":
+		case "gameCharacterSelection":
 			c.globalState = GlobalChooseRunner
+		case "gameStart":
+			c.globalState = GlobalLaunchRun
 
 		case "updateSkin":
-				if data, ok := eventData.(map[string]interface{}); ok {
-					if data["name"] != c.name {
-						for i := range c.game.runners {
-							if c.game.runners[i].client.name == data["name"] {
-								c.game.runners[i].colorScheme = data["skin"].(int)
-							}
+			if data, ok := eventData.(map[string]interface{}); ok {
+				if data["name"] != c.name {
+					for i := range c.game.runners {
+						if c.game.runners[i].client.name == data["name"] {
+							c.game.runners[i].colorScheme = data["skin"].(int)
 						}
 					}
 				}
+			}
 		case "gameEnd":
 			for _, item := range eventData.([]interface{}) {
 				if data, ok := item.(map[string]interface{}); ok {
@@ -151,7 +153,6 @@ func (c *Client) listen() {
 						log.Printf("%v a fait %v", data["name"], data["duration"])
 						for i := range c.game.runners {
 							if c.game.runners[i].client.name == data["name"] {
-								log.Printf("test")
 								c.game.runners[i].runTime = data["duration"].(time.Duration)
 							}
 						}

@@ -18,7 +18,7 @@ type Server struct {
 }
 
 const (
-	GameMaxPlayers = 3
+	GameMaxPlayers = 2
 )
 
 func NewServer(address string) *Server {
@@ -53,8 +53,7 @@ func (s *Server) Start() error {
 			}
 
 			// Début de la partie
-			s.broadcast("gameStart", nil)
-
+			s.broadcast("gameCharacterSelection", nil)
 		}
 	}
 }
@@ -113,6 +112,21 @@ func (s *Server) listen(r *Runner) {
 		log.Printf("Message reçu de %s avec la clé %s: %v (%T)", r.client.name, key, data, data)
 
 		switch key {
+		case "readyToRun":
+			r.colorSelected = data.(bool)
+
+			var allPlayersReady = true
+			for _, p := range s.players {
+				if !p.colorSelected {
+					allPlayersReady = false
+				}
+			}
+
+			if allPlayersReady {
+				fmt.Printf("allPlayersReady")
+				s.broadcast("gameStart", nil)
+			}
+
 		case "updateSkin":
 			s.broadcast("updateSkin", map[string]interface{}{
 				"name": r.client.name,

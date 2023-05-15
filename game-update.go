@@ -18,7 +18,6 @@ package main
 import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
-	"log"
 	"time"
 )
 
@@ -127,21 +126,21 @@ func (g *Game) Update() error {
 					g.runners[i+1].client = &client
 				}
 			}
-			for i := range g.runners {
-				log.Println(" test" + g.runners[i].client.name)
-			}
 			g.state++
 		}
 	case StateChooseRunner:
 		done := g.ChooseRunners()
 		if done {
 			g.UpdateAnimation()
+			localRunner.client.send("readyToRun", true)
 			g.state++
 		}
 	case StateLaunchRun:
-		done := g.HandleLaunchRun()
-		if done {
-			g.state++
+		if localRunner.client.globalState == GlobalLaunchRun {
+			done := g.HandleLaunchRun()
+			if done {
+				g.state++
+			}
 		}
 	case StateRun:
 		g.UpdateRunners()
