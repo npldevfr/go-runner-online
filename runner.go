@@ -109,8 +109,6 @@ func (r *Runner) UpdateAnimation(runnerImage *ebiten.Image) {
 // screen)
 func (r *Runner) ManualChoose() (done bool) {
 
-	//r.colorScheme = r.client.listenForKey("updateSkin").(int)
-
 	r.colorSelected =
 		(!r.colorSelected && inpututil.IsKeyJustPressed(ebiten.KeySpace)) ||
 			(r.colorSelected && !inpututil.IsKeyJustPressed(ebiten.KeySpace))
@@ -121,14 +119,10 @@ func (r *Runner) ManualChoose() (done bool) {
 			r.colorScheme = (r.colorScheme + 7) % 8
 		}
 	}
+
 	if (!r.colorSelected) && (inpututil.IsKeyJustPressed(ebiten.KeyRight) || inpututil.IsKeyJustPressed(ebiten.KeyLeft)) {
 		r.client.send("updateSkin", r.colorScheme)
 	}
-
-	/*
-		if r.client.globalState == GlobalLaunchRun && r.colorSelected {
-			return r.colorSelected
-		}*/
 
 	return r.colorSelected
 }
