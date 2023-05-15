@@ -113,6 +113,12 @@ func (s *Server) listen(r *Runner) {
 		log.Printf("Message reçu de %s avec la clé %s: %v (%T)", r.client.name, key, data, data)
 
 		switch key {
+		case "updateSkin":
+			s.broadcast("updateSkin", map[string]interface{}{
+				"name": r.client.name,
+				"skin": data,
+			})
+			log.Printf("Skin %d pour %s", data, r.client.name)
 		case "runnerLaneFinished":
 			r.runTime = data.(time.Duration)
 

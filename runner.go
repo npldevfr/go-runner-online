@@ -117,11 +117,12 @@ func (r *Runner) ManualChoose() (done bool) {
 			r.colorScheme = (r.colorScheme + 7) % 8
 		}
 	}
+	if (!r.colorSelected) && (inpututil.IsKeyJustPressed(ebiten.KeyRight)|| inpututil.IsKeyJustPressed(ebiten.KeyLeft)) {
+		r.client.send("updateSkin", r.colorScheme)
+	}
 
-	/*r.client.send("updateSkin", struct {
-		Skin int
-	}{Skin: r.colorScheme})
 
+/*
 	if r.client.globalState == GlobalLaunchRun && r.colorSelected {
 		return r.colorSelected
 	}*/

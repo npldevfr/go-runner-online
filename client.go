@@ -105,6 +105,7 @@ func (c *Client) listen() {
 		//name not registered for interface: "[]interface {}"
 		gob.Register([]interface{}{})
 		gob.Register(map[string]interface{}{})
+
 		gob.Register(time.Duration(0))
 
 		// decode the data using base64 and gob
@@ -132,6 +133,17 @@ func (c *Client) listen() {
 			}
 		case "gameStart":
 			c.globalState = GlobalChooseRunner
+
+		case "updateSkin":
+				if data, ok := eventData.(map[string]interface{}); ok {
+					if data["name"] != c.name {
+						for i := range c.game.runners {
+							if c.game.runners[i].client.name == data["name"] {
+								c.game.runners[i].colorScheme = data["skin"].(int)
+							}
+						}
+					}
+				}
 		case "gameEnd":
 			for _, item := range eventData.([]interface{}) {
 				if data, ok := item.(map[string]interface{}); ok {
