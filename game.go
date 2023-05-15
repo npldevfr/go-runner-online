@@ -76,15 +76,6 @@ func InitGame() (g Game) {
 	return g
 }
 
-func (g *Game) getRunnerByName(name string) *Runner {
-	for i := range g.runners {
-		if g.runners[i].client != nil && g.runners[i].client.name == name {
-			return &g.runners[i]
-		}
-	}
-	return nil
-}
-
 // create a function in Game to instantiate a new client
 func (g *Game) createClient(address string) {
 	client := NewClient()

@@ -137,6 +137,7 @@ func (g *Game) Update() error {
 		done := g.ChooseRunners()
 		if done {
 			g.UpdateAnimation()
+			localRunner.client.send("updateSkin", localRunner.colorScheme)
 			localRunner.client.send("readyToRun", true)
 			g.state++
 		}

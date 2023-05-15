@@ -157,7 +157,6 @@ func (c *Client) listen() {
 					for i := range c.game.runners {
 						if c.game.runners[i].client.name == data["name"] {
 							c.game.runners[i].xpos = data["pos"].(float64)
-							c.game.UpdateAnimation()
 						}
 					}
 				}
