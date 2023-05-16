@@ -29,7 +29,7 @@ Coté client (lancement):
 - [x] Création du projet
 - [x] Création du serveur
 - [x] Création du client
-- [ ] Création des méthodes pour communiquer entre le client et le serveur
-- [ ] Synchronisation des joueurs
+- [x] Création des méthodes pour communiquer entre le client et le serveur
+- [x] Synchronisation des joueurs
 
 
